@@ -8,12 +8,14 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 200 }
+      gravity: { y: 400 },
+      debug: true
     }
   },
   scene: {
-    preload: preload,
-    create: create
+    preload,
+    create,
+    update
   }
 };
 
@@ -24,6 +26,9 @@ function preload () {
   this.load.image('bird', 'assets/bird.png')
 }
 
+const VELOCITY = 200
+const flapVelocity = 250
+
 let bird = null
 
 function create () {
@@ -31,4 +36,19 @@ function create () {
   backgroung.setOrigin(0)
 
   bird = this.physics.add.sprite(config.width * 0.1 , config.height * 0.5, 'bird').setOrigin(0)
+
+  this.input.keyboard.on('keydown-SPACE', flap);
+}
+
+
+function update (time, delta) {
+  if(bird.y > config.height){
+    console.log('game over height')
+  }else if(bird.y < 0){
+    console.log('game over dropped')
+  }
+}
+
+function flap(){
+  bird.body.velocity.y = -flapVelocity
 }
