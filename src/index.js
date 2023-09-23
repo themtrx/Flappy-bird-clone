@@ -21,18 +21,14 @@ const config = {
 new Phaser.Game(config);
 
 const VELOCITY = 200
+const PIPE_TO_RENDER = 4
+
+let pipeHorizontalDistance = 0
+
 const flapVelocity = 250
 const initialBirdPosition = { x: config.width * 0.1, y: config.height / 2 } 
 
 let bird = null
-
-let upperPipe = null
-let lowerPipe = null
-
-let pipeOpeningRange = [150, 250]
-let pipeOpening = Phaser.Math.Between(...pipeOpeningRange)
-
-let pipeVerticalPosition = Phaser.Math.Between(0 + 20, config.height - 20 - pipeOpening)
 
 function preload () {
   this.load.image('sky', 'assets/sky.png')
@@ -47,8 +43,12 @@ function create () {
   bird = this.physics.add.sprite(initialBirdPosition.x, initialBirdPosition.y, 'bird').setOrigin(0)
   bird.body.gravity.y = 400
 
-  upperPipe = this.physics.add.sprite(400, pipeVerticalPosition, 'pipe').setOrigin(0, 1)
-  lowerPipe = this.physics.add.sprite(400, upperPipe.y + pipeOpening, 'pipe').setOrigin(0)
+  for (let i = 0; i < PIPE_TO_RENDER; i++) {
+    const upperPipe = this.physics.add.sprite(0, 0, 'pipe').setOrigin(0, 1)
+    const lowerPipe = this.physics.add.sprite(0, 0, 'pipe').setOrigin(0)
+
+    placePipes(upperPipe, lowerPipe)
+  }
 
   this.input.keyboard.on('keydown-SPACE', flap);
 }
@@ -67,4 +67,22 @@ function restartPlayerPosition(){
 
 function flap(){
   bird.body.velocity.y = -flapVelocity
+}
+
+function placePipes(upPipe, lowPipe){
+  pipeHorizontalDistance += 400
+
+  let pipeOpeningRange = [150, 250]
+  let pipeOpening = Phaser.Math.Between(...pipeOpeningRange)
+
+  let pipeVerticalPosition = Phaser.Math.Between(0 + 20, config.height - 20 - pipeOpening)
+
+  upPipe.x = pipeHorizontalDistance
+  upPipe.y = pipeVerticalPosition
+
+  lowPipe.x = upPipe.x
+  lowPipe.y = upPipe.y + pipeOpening
+
+  upPipe.body.velocity.x = -200
+  lowPipe.body.velocity.x = -200
 }
