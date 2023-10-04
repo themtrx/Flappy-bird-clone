@@ -12,15 +12,33 @@ class PlayScene extends BaseScene {
         this.isPaused = false
 
         this.pipeHorizontalDistance = 0
-        this.pipeOpeningRange = [150, 250]
-        this.pipeHorizontalDistanceRange = [500, 550]
+        // this.pipeOpeningRange = [150, 250]
+        // this.pipeHorizontalDistanceRange = [500, 550]
         this.flapVelocity = 300
-
+ 
         this.core = 0
         this.scoreText = ''
+
+        this.currentDifficulty = 'easy'
+        this.difficulties = {
+            'easy': {
+                pipeOpeningRange: [200, 270],
+                pipeHorizontalDistanceRange: [450, 500],
+            },
+            'normal': {
+                pipeOpeningRange: [150, 250],
+                pipeHorizontalDistanceRange: [350, 450], 
+            },
+            'hard': {
+                pipeOpeningRange: [100, 150],
+                pipeHorizontalDistanceRange: [300, 350], 
+            },
+        }
     }
 
     create() {
+        this.currentDifficulty = 'easy'
+        
         super.create()
         this.createBird()
         this.createPipes()
@@ -120,10 +138,12 @@ class PlayScene extends BaseScene {
     }
 
     placePipes(upPipe, lowPipe){
+        const difficulty = this.difficulties[this.currentDifficulty]
+
         const rightMostX = this.getRightMostPipe()
-        const pipeOpening = Phaser.Math.Between(...this.pipeOpeningRange)
+        const pipeOpening = Phaser.Math.Between(...difficulty.pipeOpeningRange)
         const pipeVerticalPosition = Phaser.Math.Between(0 + 20, this.config.height - 20 - pipeOpening)
-        const pipeHorizontalDistance = Phaser.Math.Between(...this.pipeHorizontalDistanceRange)
+        const pipeHorizontalDistance = Phaser.Math.Between(...difficulty.pipeHorizontalDistanceRange)
       
         upPipe.x = rightMostX + pipeHorizontalDistance
         upPipe.y = pipeVerticalPosition
@@ -143,9 +163,20 @@ class PlayScene extends BaseScene {
               this.placePipes(...tempPipes)
               this.increaseScore()
               this.saveBestScore()
+              this.increaseDifficulty()
             }
           }
         })
+    }
+
+    increaseDifficulty() {
+        if(this.score == 5){
+            this.currentDifficulty = 'normal'
+        }
+        
+        if(this.score == 10){
+            this.currentDifficulty = 'hard'
+        }
     }
 
     getRightMostPipe(){
