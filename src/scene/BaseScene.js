@@ -6,6 +6,9 @@ class BaseScene extends Phaser.Scene {
         super(key)
         this.config = config
         this.screenCenter = [config.width / 2, config.height / 2]
+        this.fontSize = 32
+        this.lineHeight = 42
+        this.fontOptions = { fontSize: `${this.fontSize}px`, fill: '#fff' }
     }
 
     create() {
@@ -17,8 +20,8 @@ class BaseScene extends Phaser.Scene {
 
         menu.forEach(menuItem => {
             const menuPosition = [ this.screenCenter[0], this.screenCenter[1] + lastMenuPositionY ]
-            this.add.text(...menuPosition, menuItem.text, {fontSize: '32px', fill: '#fff'}).setOrigin(0.5, 1)
-            lastMenuPositionY += 42
+            this.add.text(...menuPosition, menuItem.text, this.fontOptions).setOrigin(0.5, 1)
+            lastMenuPositionY += this.lineHeight
         })
     }
 }
